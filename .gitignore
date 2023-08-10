@@ -1,4 +1,4 @@
 # node modeule
 node_modules/
 # .env file
-# .env
+.env
