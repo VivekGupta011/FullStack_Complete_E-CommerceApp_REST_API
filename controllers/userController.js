@@ -2,6 +2,8 @@ import UserModel from '../models/User.js'
 import bcrypt from 'bcrypt'
 import jwt from 'jsonwebtoken'
 import transporter from '../config/emailConfig.js'
+// import {generateToken} from '../config/jwtToken.js';
+import {generateToken} from '../config/jwtToken.js'
 
 class UserController {
   static userRegistration = async (req, res) => {
@@ -51,7 +53,12 @@ class UserController {
           const isMatch = await bcrypt.compare(password, user.password)
           if ((user.email === email) && isMatch) {
             // Generate JWT Token
-            const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '5d' })
+            // const token = jwt.sign({ userID: user._id }, process.env.JWT_SECRET_KEY, { expiresIn: '5d' })
+            const token = generateToken(user._id );
+            res.cookie("refreshToken",token, {
+              httpOnly: true,
+              maxAge: 72 * 60 * 60 * 1000,
+            });
             res.send({ "status": "success", "message": "Login Success", "token": token })
           } else {
             res.send({ "status": "failed", "message": "Email or Password is not Valid" })
